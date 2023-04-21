@@ -1,0 +1,19 @@
+FROM alpine:latest
+
+RUN apk update && apk add --no-cache gcc make libc-dev libgcc libstdc++ openocd git
+
+RUN mkdir /opt/gcc-arm-none-eabi \
+    && cd /opt/gcc-arm-none-eabi \
+    && wget https://developer.arm.com/-/media/Files/downloads/gnu-rm/10.3-2021.07/gcc-arm-none-eabi-10.3-2021.07-x86_64-linux.tar.bz2 \
+    && tar xjf gcc-arm-none-eabi-10.3-2021.07-x86_64-linux.tar.bz2 --strip-components=1 \
+    && rm gcc-arm-none-eabi-10.3-2021.07-x86_64-linux.tar.bz2 \
+    && chmod -R 755 /opt/gcc-arm-none-eabi
+
+#WORKDIR /app
+
+# Install STM32CubeF4 libraries and examples
+# RUN git clone https://github.com/STMicroelectronics/STM32CubeF4.git \
+#     && cd STM32CubeF4/Projects/STM32F429I-Discovery/Examples/GCC \
+#     && make
+
+#CMD ["openocd", "-f", "/usr/share/openocd/scripts/interface/stlink-v2.cfg", "-f", "/usr/share/openocd/scripts/target/stm32f4x.cfg"]

@@ -1,0 +1,77 @@
+# Base image
+FROM alpine:latest
+
+# Development Container Scripts
+# Ref: https://github.com/microsoft/vscode-dev-containers/tree/main/script-library
+
+# Download common-alpine.sh from Microsoft repo
+# RUN apk add curl ca-certificates \
+#     && mkdir /tmp/library-scripts/ \
+#     && curl "https://raw.githubusercontent.com/microsoft/vscode-dev-containers/main/script-library/common-alpine.sh" --output /tmp/library-scripts/common-alpine.sh
+
+# Or use a local copy of the script
+COPY ./common-alpine.sh /tmp/library-scripts/
+
+# Execute and clean up after running the script
+RUN ash /tmp/library-scripts/common-alpine.sh \
+    && rm -rf /tmp/library-scripts
+
+# The quickest way to get started with GCC on Alpine Linux is by issuing the following command
+# Ref: https://wiki.alpinelinux.org/wiki/GCC
+RUN apk add build-base gdb cmake make
+
+# Install only the Linux subsystem for managing device events (udev)
+RUN apk add udev
+
+# Configure udev:
+
+# Allow all users to access USB devices
+RUN echo 'SUBSYSTEM=="usb", MODE="0666"' > /etc/udev/rules.d/99-usb-permissions.rules
+
+# Create a device node for any USB serial device
+RUN echo 'KERNEL=="ttyUSB[0-9]*", MODE="0666", SYMLINK+="serial/by-id/%s{serial}"' > /etc/udev/rules.d/99-usb-serial.rules
+
+# Create a device node for any ACM serial device
+RUN echo 'KERNEL=="ttyACM[0-9]*", MODE="0666", SYMLINK+="serial/by-id/%s{serial}"' > /etc/udev/rules.d/99-usb-acm.rules
+
+# Linux Serial Ports Using C/C++
+# Ref: https://blog.mbedded.ninja/programming/operating-systems/linux/linux-serial-ports-using-c-cpp/
+
+# Add misc. tools
+RUN apk add tree
+
+
+# Update the package list and install necessary dependencies
+RUN apk update && \
+    apk add --no-cache git make cmake gcc g++ libc-dev libusb-dev libftdi1-dev && \
+
+# Clone and build the STLink utility
+    apk add --no-cache stlink && \
+    # git clone https://github.com/stlink-org/stlink.git && \
+    # cd stlink && \
+    # make release && \
+    # make install && \
+    # cd .. && \
+    # rm -rf stlink
+
+# Install Python 3 and download and install the STM32CubeMX software
+# RUN apk add --no-cache python3 && \
+#     wget -O STM32CubeMX.zip https://www.st.com/resource/en/tool/software-in-development-tools/stm32cubemx.wwy.zip && \
+#     unzip STM32CubeMX.zip -d /opt && \
+#     rm STM32CubeMX.zip && \
+#     ln -s /opt/STM32CubeMX_*/STM32CubeMX /usr/local/bin/STM32CubeMX
+
+
+# Clone STM32F4 libraries and examples
+#RUN git clone --depth 1 https://github.com/STMicroelectronics/STM32CubeF4.git /opt/STM32CubeF4
+#git submodule add https://github.com/STMicroelectronics/STM32CubeF4.git submodules/STM32CubeF4
+#git commit -m "Added STM32CubeF4 as a submodule"
+#git push
+
+#Note that when you clone a Git repository that contains submodules, the submodules will not be cloned automatically. To clone the submodules, you can use the following command after cloning the repository:
+#git submodule update --init --recursive
+
+# Compile "Hello World" example
+#WORKDIR /opt/STM32CubeF4/Projects/STM32F429I-Discovery/Examples/GPIO/GPIO_IOToggle/SW4STM32/STM32F429I-Discovery
+#RUN make clean && make all
+#cd /submodules/STM32CubeF4/Projects/STM32F429I-Discovery/Examples/GPIO/GPIO_IOToggle/SW4STM32/STM32F429I-Discovery
