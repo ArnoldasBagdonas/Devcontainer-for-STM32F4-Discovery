@@ -3,7 +3,7 @@
 {
 	"name": "STM32 Toolchain",
 	"build": {
-		"dockerfile": "Dockerfile.stm32"
+		"dockerfile": "Dockerfile.ubuntu"
 	},
 	
 	"extensions": [
@@ -34,6 +34,7 @@
 
 	"runArgs": [
 		"--privileged",
+		//"--device=/dev:/dev"
 		"--device=/dev/bus/usb:/dev/bus/usb"
 	  ],
 	// Attach physical USB device as per instructions bellow:

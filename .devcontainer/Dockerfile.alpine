@@ -1,77 +1,61 @@
-# Base image
+# This Dockerfile creates an Alpine Linux-based image with various software development tools installed.
+
+# Use the latest Alpine Linux image as the base image.
 FROM alpine:latest
 
-# Development Container Scripts
-# Ref: https://github.com/microsoft/vscode-dev-containers/tree/main/script-library
+# Update the package index.
+RUN apk update
 
-# Download common-alpine.sh from Microsoft repo
-# RUN apk add curl ca-certificates \
-#     && mkdir /tmp/library-scripts/ \
-#     && curl "https://raw.githubusercontent.com/microsoft/vscode-dev-containers/main/script-library/common-alpine.sh" --output /tmp/library-scripts/common-alpine.sh
+# Install git for distributed version control system for source code management and collaboration.
+RUN apk add --no-cache git
 
-# Or use a local copy of the script
-COPY ./common-alpine.sh /tmp/library-scripts/
+# Install make for build automation tool used to build and manage complex software projects.
+RUN apk add --no-cache make
 
-# Execute and clean up after running the script
-RUN ash /tmp/library-scripts/common-alpine.sh \
-    && rm -rf /tmp/library-scripts
+# Install gcc for compiler for the C programming language.
+RUN apk add --no-cache gcc
 
-# The quickest way to get started with GCC on Alpine Linux is by issuing the following command
-# Ref: https://wiki.alpinelinux.org/wiki/GCC
-RUN apk add build-base gdb cmake make
+# Install g++ for compiler for the C++ programming language.
+RUN apk add --no-cache g++
 
-# Install only the Linux subsystem for managing device events (udev)
-RUN apk add udev
+# Install libc-dev for development libraries and header files for the C library, used for building and linking programs.
+RUN apk add --no-cache libc-dev
 
-# Configure udev:
+# Install libstdc++ for C++ standard library implementation.
+RUN apk add --no-cache libstdc++
 
-# Allow all users to access USB devices
-RUN echo 'SUBSYSTEM=="usb", MODE="0666"' > /etc/udev/rules.d/99-usb-permissions.rules
+# Install linux-headers for header files required for building kernel modules and other system software.
+RUN apk add --no-cache linux-headers
 
-# Create a device node for any USB serial device
-RUN echo 'KERNEL=="ttyUSB[0-9]*", MODE="0666", SYMLINK+="serial/by-id/%s{serial}"' > /etc/udev/rules.d/99-usb-serial.rules
+# Install bash for popular shell and command language used for scripting and interactive command-line usage.
+RUN apk add --no-cache bash
 
-# Create a device node for any ACM serial device
-RUN echo 'KERNEL=="ttyACM[0-9]*", MODE="0666", SYMLINK+="serial/by-id/%s{serial}"' > /etc/udev/rules.d/99-usb-acm.rules
+# Install cmake for cross-platform build system generator used to build, test, and package software.
+RUN apk add --no-cache cmake
 
-# Linux Serial Ports Using C/C++
-# Ref: https://blog.mbedded.ninja/programming/operating-systems/linux/linux-serial-ports-using-c-cpp/
+# Install file utility used to determine the file type of a file.
+RUN apk add --no-cache file
 
-# Add misc. tools
-RUN apk add tree
+# Install gdb debugger for C, C++, and other programming languages.
+RUN apk add --no-cache gdb
 
+# Install openocd tool used to debug and program microcontrollers.
+RUN apk add --no-cache openocd
 
-# Update the package list and install necessary dependencies
-RUN apk update && \
-    apk add --no-cache git make cmake gcc g++ libc-dev libusb-dev libftdi1-dev && \
+# Install python3 for Python programming language version 3.x.
+RUN apk add --no-cache python3
 
-# Clone and build the STLink utility
-    apk add --no-cache stlink && \
-    # git clone https://github.com/stlink-org/stlink.git && \
-    # cd stlink && \
-    # make release && \
-    # make install && \
-    # cd .. && \
-    # rm -rf stlink
+# Install python3-pip for Python package installer, used to install and manage Python packages.
+RUN apk add --no-cache py3-pip
 
-# Install Python 3 and download and install the STM32CubeMX software
-# RUN apk add --no-cache python3 && \
-#     wget -O STM32CubeMX.zip https://www.st.com/resource/en/tool/software-in-development-tools/stm32cubemx.wwy.zip && \
-#     unzip STM32CubeMX.zip -d /opt && \
-#     rm STM32CubeMX.zip && \
-#     ln -s /opt/STM32CubeMX_*/STM32CubeMX /usr/local/bin/STM32CubeMX
+# Install ninja for fast build system similar to Make, used to build and test software.
+RUN apk add --no-cache ninja
+
+# Install gcc-arm-none-eabi toolchain for ARM Cortex-M and Cortex-R processors, used to develop embedded systems.
+RUN apk add --no-cache gcc-arm-none-eabi
+
+# Install the pyelftools Python library using pip.
+RUN pip install pyelftools
 
 
-# Clone STM32F4 libraries and examples
-#RUN git clone --depth 1 https://github.com/STMicroelectronics/STM32CubeF4.git /opt/STM32CubeF4
-#git submodule add https://github.com/STMicroelectronics/STM32CubeF4.git submodules/STM32CubeF4
-#git commit -m "Added STM32CubeF4 as a submodule"
-#git push
-
-#Note that when you clone a Git repository that contains submodules, the submodules will not be cloned automatically. To clone the submodules, you can use the following command after cloning the repository:
-#git submodule update --init --recursive
-
-# Compile "Hello World" example
-#WORKDIR /opt/STM32CubeF4/Projects/STM32F429I-Discovery/Examples/GPIO/GPIO_IOToggle/SW4STM32/STM32F429I-Discovery
-#RUN make clean && make all
-#cd /submodules/STM32CubeF4/Projects/STM32F429I-Discovery/Examples/GPIO/GPIO_IOToggle/SW4STM32/STM32F429I-Discovery
+# make -e CFLAGS="-I /usr/include"

@@ -1,32 +1,42 @@
-FROM mcr.microsoft.com/devcontainers/cpp:0-ubuntu-20.04
+# This Dockerfile creates an Ubuntu-based image with various software development tools installed.
 
-#ARG REINSTALL_CMAKE_VERSION_FROM_SOURCE="none"
-ARG REINSTALL_CMAKE_VERSION_FROM_SOURCE="3.22.2"
+# Use the latest Ubuntu image as the base image.
+FROM ubuntu:latest
 
-# Optionally install the cmake for vcpkg
-COPY ./reinstall-cmake.sh /tmp/
+# Update the package index.
+RUN apt-get update
 
-RUN if [ "${REINSTALL_CMAKE_VERSION_FROM_SOURCE}" != "none" ]; then \
-        chmod +x /tmp/reinstall-cmake.sh && /tmp/reinstall-cmake.sh ${REINSTALL_CMAKE_VERSION_FROM_SOURCE}; \
-    fi \
-    && rm -f /tmp/reinstall-cmake.sh
+# Install build-essential metapackage including common build tools such as gcc, g++, and libc-dev.
+RUN apt-get install -y build-essential
 
-# [Optional] Uncomment this section to install additional vcpkg ports.
-# RUN su vscode -c "${VCPKG_ROOT}/vcpkg install <your-port-name-here>"
+# Install git for distributed version control system for source code management and collaboration.
+RUN apt-get install -y git
 
-# [Optional] Uncomment this section to install additional packages.
-# RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
-#     && apt-get -y install --no-install-recommends <your-package-list-here>
+# Install cmake for cross-platform build system generator used to build, test, and package software.
+RUN apt-get install -y cmake
 
-# Install udev
-#RUN apt-get update && apt-get install -y udev
+# Install file utility used to determine the file type of a file.
+RUN apt-get install -y file
 
-# Allow all users to access USB devices
-#RUN echo 'SUBSYSTEM=="usb", MODE="0666"' > /etc/udev/rules.d/99-usb-permissions.rules
+# Install gdb debugger for C, C++, and other programming languages.
+RUN apt-get install -y gdb
 
-# Create a device node for any USB serial device
-#RUN echo 'KERNEL=="ttyUSB[0-9]*", MODE="0666", SYMLINK+="serial/by-id/%s{serial}"' > /etc/udev/rules.d/99-usb-serial.rules
+# Install ninja-build for fast build system similar to Make, used to build and test software.
+RUN apt-get install -y ninja-build
 
-#sudo chmod -R 777 /dev/ttyUSB0
-#stty -F /dev/ttyUSB0 115200
-#echo "Hello, world!" > /dev/ttyUSB0
+# Install openocd tool used to debug and program microcontrollers.
+RUN apt-get install -y openocd
+
+# Install python3 for Python programming language version 3.x.
+RUN apt-get install -y python3
+
+# Install python3-pip for Python package installer, used to install and manage Python packages.
+RUN apt-get install -y python3-pip
+
+# Install gcc-arm-none-eabi toolchain for ARM Cortex-M and Cortex-R processors, used to develop embedded systems.
+RUN apt-get install -y gcc-arm-none-eabi
+
+# Install the pyelftools Python library using pip.
+RUN pip install pyelftools
+
+# make -e CFLAGS="-I /usr/include"

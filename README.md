@@ -1,5 +1,53 @@
 # devcontainer for STM32F4 Discovery
 
+This devcontainer creates an environment based on the latest Ubuntu/Alpine Linux image, with various software development tools installed. The following tools are included:
+
+- `git`: Distributed version control system for source code management and collaboration.
+- `make`: Build automation tool used to build and manage complex software projects.
+- `gcc`: Compiler for the C programming language.
+- `g++`: Compiler for the C++ programming language.
+- `libc-dev`: Development libraries and header files for the C library, used for building and linking programs.
+- `libstdc++`: C++ standard library implementation.
+- `linux-headers`: Header files required for building kernel modules and other system software.
+- `bash`: Popular shell and command language used for scripting and interactive command-line usage.
+- `cmake`: Cross-platform build system generator used to build, test, and package software.
+- `file`: Utility used to determine the file type of a file.
+- `gdb`: Debugger for C, C++, and other programming languages.
+- `openocd`: Tool used to debug and program microcontrollers.
+- `python3`: Python programming language version 3.x.
+- `py3-pip`: Python package installer, used to install and manage Python packages.
+- `ninja`: Fast build system similar to Make, used to build and test software.
+- `gcc-arm-none-eabi`: Toolchain for ARM Cortex-M and Cortex-R processors, used to develop embedded systems.
+- `pyelftools`: Python library used for analyzing ELF files and DWARF debugging information.
+
+This devcontainer is useful for developing and testing software, especially for embedded systems development. To use it, simply build the Docker image using the provided Dockerfile, then start a devcontainer from the resulting image.
+
+## Connect USB devices to Docker devcontainer
+
+> **_NOTE:_**  First connect USB hardware and select the bus ID of the device you’d like to attach to WSL. Then launch the devcontainer or dockerimage!
+
+WSL (Windows Subsystem for Linux) provides a convenient way to run a Linux environment on a Windows machine. However, [connecting USB devices to WSL](https://learn.microsoft.com/en-us/windows/wsl/connect-usb) can be a bit tricky. In this guide, we'll go over the steps required to attach a physical USB device to your WSL environment (or running Docker devcontainer), so you can use it in your Linux applications. Whether you need to connect a USB drive, a printer, or some other USB peripheral, this guide will show you how to get it up and running.
+
+- Install the latest release USB/IP driver on the Windows host machine. You can find the USB/IP driver for Windows on the official website: https://github.com/dorssel/usbipd-win/releases.
+
+- Plug in the USB device you want to use on the Windows host machine.
+
+- List all of the USB devices connected to Windows by opening PowerShell in administrator mode and entering the command:
+```
+usbipd wsl list
+```
+- Select the bus ID of the device you’d like to attach to WSL and run this command. You’ll be prompted by WSL for a password to run a sudo command. The Linux distribution to be attached must be your default distribution. (See the [Basic comands for WSL doc](https://learn.microsoft.com/en-us/windows/wsl/basic-commands#set-default-linux-distribution) to change your default distribution).
+```
+usbipd wsl attach --busid <busid>
+```
+- Open Ubuntu (or your preferred WSL command line) and list the attached USB devices using the command. You should see the device you just attached and be able to interact with it using normal Linux tools. Depending on your application, you may need to configure udev rules to allow non-root users to access the device:
+```
+lsusb
+```
+- Once you are done using the device in WSL, you can either physically disconnect the USB device or run this command from PowerShell in administrator mode:
+```
+usbipd wsl detach --busid <busid>
+```
 
 
 ## Getting started

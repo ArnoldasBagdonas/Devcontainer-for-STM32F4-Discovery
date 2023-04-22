@@ -655,6 +655,11 @@ void StartDefaultTask(void const * argument)
   for(;;)
   {
     osDelay(1);
+    if (HAL_GPIO_ReadPin(B1_GPIO_Port, B1_Pin)) {
+      HAL_GPIO_WritePin(LD4_GPIO_Port, LD4_Pin, GPIO_PIN_SET);
+    } else {
+      HAL_GPIO_WritePin(LD4_GPIO_Port, LD4_Pin, GPIO_PIN_RESET);
+    }
   }
   /* USER CODE END 5 */
 }
