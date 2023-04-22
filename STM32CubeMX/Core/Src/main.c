@@ -654,12 +654,17 @@ void StartDefaultTask(void const * argument)
   /* Infinite loop */
   for(;;)
   {
+    #if (1)
+    osDelay(250);
+    HAL_GPIO_TogglePin(LD4_GPIO_Port, LD4_Pin);
+    #else
     osDelay(1);
     if (HAL_GPIO_ReadPin(B1_GPIO_Port, B1_Pin)) {
       HAL_GPIO_WritePin(LD4_GPIO_Port, LD4_Pin, GPIO_PIN_SET);
     } else {
       HAL_GPIO_WritePin(LD4_GPIO_Port, LD4_Pin, GPIO_PIN_RESET);
     }
+    #endif
   }
   /* USER CODE END 5 */
 }
