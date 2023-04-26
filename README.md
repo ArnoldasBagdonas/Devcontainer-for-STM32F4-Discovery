@@ -1,4 +1,4 @@
-# devcontainer for STM32F4 Discovery
+# Devcontainer for STM32F4 Discovery
 
 This devcontainer creates an environment based on the latest Ubuntu/Alpine Linux image, with various software development tools installed. The following tools are included:
 
