@@ -64,19 +64,32 @@ set(LDSCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/STM32CubeMX/STM32F429ZITx_FLASH.ld")
 set(LIBS "-lc -lm -lnosys")
 set(LIBDIR "")
 
-# set(CMAKE_C_FLAGS "${MCU} ${C_DEFS}  --specs=nosys.specs -Wall -fdata-sections -ffunction-sections")
-# set(CMAKE_CXX_FLAGS "${MCU} ${C_DEFS} --specs=nosys.specs -Wall -fdata-sections -ffunction-sections")
-# set(CMAKE_ASM_FLAGS "-x assembler-with-cpp")
+# define CMAKE FLAGS for different build types (debug, release, minsizerel, relwithdebinfo)
+set(CMAKE_C_FLAGS_DEBUG "${MCU} ${C_DEFS}  --specs=nosys.specs -Wall -fdata-sections -ffunction-sections -g -O0")
+set(CMAKE_C_FLAGS_RELEASE "${MCU} ${C_DEFS}  --specs=nosys.specs -Wall -fdata-sections -ffunction-sections -O3")
+set(CMAKE_C_FLAGS_MINSIZEREL "${MCU} ${C_DEFS}  --specs=nosys.specs -Wall -fdata-sections -ffunction-sections -Os")
+set(CMAKE_C_FLAGS_RELWITHDEBINFO "${MCU} ${C_DEFS}  --specs=nosys.specs -Wall -fdata-sections -ffunction-sections -g -O2")
 
-set(CMAKE_C_FLAGS_DEBUG "${MCU} ${C_DEFS}  --specs=nosys.specs -Wall -fdata-sections -ffunction-sections -g")
-set(CMAKE_CXX_FLAGS_DEBUG "${MCU} ${C_DEFS} --specs=nosys.specs -Wall -fdata-sections -ffunction-sections -g")
-set(CMAKE_ASM_FLAGS_DEBUG "-x assembler-with-cpp -g")
 
-set(CMAKE_C_FLAGS_RELEASE "${MCU} ${C_DEFS}  --specs=nosys.specs -Wall -fdata-sections -ffunction-sections")
-set(CMAKE_CXX_FLAGS_RELEASE "${MCU} ${C_DEFS} --specs=nosys.specs -Wall -fdata-sections -ffunction-sections")
-set(CMAKE_ASM_FLAGS_RELEASE "-x assembler-with-cpp")
+set(CMAKE_CXX_FLAGS_DEBUG "${MCU} ${C_DEFS}  --specs=nosys.specs -Wall -fdata-sections -ffunction-sections -g -O0")
+set(CMAKE_CXX_FLAGS_RELEASE "${MCU} ${C_DEFS}  --specs=nosys.specs -Wall -fdata-sections -ffunction-sections -O3")
+set(CMAKE_CXX_FLAGS_MINSIZEREL "${MCU} ${C_DEFS}  --specs=nosys.specs -Wall -fdata-sections -ffunction-sections -Os")
+set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${MCU} ${C_DEFS}  --specs=nosys.specs -Wall -fdata-sections -ffunction-sections -g -O2")
+
+set(CMAKE_CXX_FLAGS_DEBUG "${MCU} ${C_DEFS}  --specs=nosys.specs -Wall -fdata-sections -ffunction-sections -g -O0")
+set(CMAKE_CXX_FLAGS_RELEASE "${MCU} ${C_DEFS}  --specs=nosys.specs -Wall -fdata-sections -ffunction-sections -O3")
+set(CMAKE_CXX_FLAGS_MINSIZEREL "${MCU} ${C_DEFS}  --specs=nosys.specs -Wall -fdata-sections -ffunction-sections -Os")
+set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${MCU} ${C_DEFS}  --specs=nosys.specs -Wall -fdata-sections -ffunction-sections -g -O2")
+
+set(CMAKE_ASM_FLAGS_DEBUG "-x assembler-with-cpp -g -O0")
+set(CMAKE_ASM_FLAGS_RELEASE "-x assembler-with-cpp -O3")
+set(CMAKE_ASM_FLAGS_MINSIZEREL "-x assembler-with-cpp -Os")
+set(CMAKE_ASM_FLAGS_RELWITHDEBINFO "-x assembler-with-cpp -g -O2")
 
 set(CMAKE_EXE_LINKER_FLAGS "${MCU} -specs=nano.specs ${LIBDIR} ${LIBS}")
 
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 17)
+
+#Ref:   https://blog.feabhas.com/2021/07/cmake-part-2-release-and-debug-builds/
+#       https://five-embeddev.com/baremetal/cmake/
