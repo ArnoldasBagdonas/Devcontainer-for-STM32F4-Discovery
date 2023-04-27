@@ -36,6 +36,12 @@ RUN apt-get install -y python3-pip
 # Install gcc-arm-none-eabi toolchain for ARM Cortex-M and Cortex-R processors, used to develop embedded systems.
 RUN apt-get install -y gcc-arm-none-eabi
 
+# Install the gdb-multiarch package
+RUN apt-get install gdb-multiarch
+
+# Create a symbolic link to arm-none-eabi-gdb
+RUN ln -s /usr/bin/gdb-multiarch /usr/bin/arm-none-eabi-gdb
+
 # Install the pyelftools Python library using pip.
 RUN pip install pyelftools
 
