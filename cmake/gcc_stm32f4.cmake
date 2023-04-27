@@ -64,9 +64,18 @@ set(LDSCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/STM32CubeMX/STM32F429ZITx_FLASH.ld")
 set(LIBS "-lc -lm -lnosys")
 set(LIBDIR "")
 
-set(CMAKE_C_FLAGS "${MCU} ${C_DEFS}  --specs=nosys.specs -Wall -fdata-sections -ffunction-sections")
-set(CMAKE_CXX_FLAGS "${MCU} ${C_DEFS} --specs=nosys.specs -Wall -fdata-sections -ffunction-sections")
-set(CMAKE_ASM_FLAGS "-x assembler-with-cpp")
+# set(CMAKE_C_FLAGS "${MCU} ${C_DEFS}  --specs=nosys.specs -Wall -fdata-sections -ffunction-sections")
+# set(CMAKE_CXX_FLAGS "${MCU} ${C_DEFS} --specs=nosys.specs -Wall -fdata-sections -ffunction-sections")
+# set(CMAKE_ASM_FLAGS "-x assembler-with-cpp")
+
+set(CMAKE_C_FLAGS_DEBUG "${MCU} ${C_DEFS}  --specs=nosys.specs -Wall -fdata-sections -ffunction-sections -g")
+set(CMAKE_CXX_FLAGS_DEBUG "${MCU} ${C_DEFS} --specs=nosys.specs -Wall -fdata-sections -ffunction-sections -g")
+set(CMAKE_ASM_FLAGS_DEBUG "-x assembler-with-cpp -g")
+
+set(CMAKE_C_FLAGS_RELEASE "${MCU} ${C_DEFS}  --specs=nosys.specs -Wall -fdata-sections -ffunction-sections")
+set(CMAKE_CXX_FLAGS_RELEASE "${MCU} ${C_DEFS} --specs=nosys.specs -Wall -fdata-sections -ffunction-sections")
+set(CMAKE_ASM_FLAGS_RELEASE "-x assembler-with-cpp")
+
 set(CMAKE_EXE_LINKER_FLAGS "${MCU} -specs=nano.specs ${LIBDIR} ${LIBS}")
 
 set(CMAKE_C_STANDARD 11)

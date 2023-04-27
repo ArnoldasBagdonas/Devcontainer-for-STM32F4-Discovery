@@ -112,3 +112,10 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
     SUFFIX ".elf"
     LINK_FLAGS "-T ${CMAKE_CURRENT_SOURCE_DIR}/STM32CubeMX/STM32F429ZITx_FLASH.ld"
 )
+
+# Define a custom command to run the target without a debugger
+add_custom_command(TARGET ${PROJECT_NAME}
+        POST_BUILD
+        COMMAND openocd -f board/stm32f429disc1.cfg -c "program ${CMAKE_BINARY_DIR}/${PROJECT_NAME}.elf verify reset exit"
+        COMMENT "Executing ${PROJECT_NAME} without a debugger...")
+# https://www.justinmklam.com/posts/2017/10/vscode-debugger-setup/

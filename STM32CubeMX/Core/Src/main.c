@@ -655,7 +655,7 @@ void StartDefaultTask(void const * argument)
   for(;;)
   {
     #if (1)
-    osDelay(250);
+    osDelay(1000);
     HAL_GPIO_TogglePin(LD4_GPIO_Port, LD4_Pin);
     #else
     osDelay(1);

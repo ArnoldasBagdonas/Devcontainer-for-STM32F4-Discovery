@@ -7,8 +7,10 @@
 	},
 	
 	"extensions": [
+		//use "code --list-extensions" to export the Visual Studio Code extensions
 		"ms-vscode.cmake-tools",
 		"ms-vscode.cpptools",
+		"marus25.cortex-debug",
     ],
 
 	"settings": {
