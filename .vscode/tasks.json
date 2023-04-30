@@ -1,0 +1,31 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "build",
+        "type": "shell",
+        "command": "cmake --build ${workspaceFolder}/build --target all"
+      },
+      {
+        "label": "clean",
+        "type": "shell",
+        "command": "cmake --build ${workspaceFolder}/build --target clean"
+      },
+      {
+        "label": "flash",
+        "type": "shell",
+        "command": "openocd -f interface/stlink-v2-1.cfg -f target/stm32f4x.cfg -c \"program ${workspaceFolder}/build/STM32F429ZITx_HelloWorld.elf verify reset\" -c exit",
+        "dependsOn": "build"
+      },
+      {
+        "label": "debug",
+        "type": "shell",
+        "command": "openocd -f interface/stlink-v2-1.cfg -f target/stm32f4x.cfg",
+        "group": {
+          "kind": "build",
+          "isDefault": true
+        }
+      }
+    ]
+  }
+  

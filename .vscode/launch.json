@@ -1,21 +1,61 @@
 {
-    // Use IntelliSense to learn about possible attributes.
-    // Hover to view descriptions of existing attributes.
-    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
-        {
-            "cwd": "${workspaceRoot}",
-            "executable": "./build/STM32F429ZITx_HelloWorld.elf",
-            "name": "Debug with OpenOCD",
-            "request": "launch",
-            "type": "cortex-debug",
-            "servertype": "openocd",
-            "configFiles": ["board/stm32f429disc1.cfg"],
-            "searchDir": [],
-            "runToEntryPoint": "main",
-            "showDevDebugOutput": "none"
-            //"preLaunchTask": "start_openocd"
-        }
-    ]
-}
+      {
+        "name": "Attaching to a running target",
+        "type": "cppdbg",
+        "request": "launch",
+        "program": "${workspaceFolder}/build/STM32F429ZITx_HelloWorld.elf",
+        "args": [],
+        "stopAtEntry": false,
+        "cwd": "${workspaceFolder}",
+        "environment": [],
+        "externalConsole": true,
+        "MIMode": "gdb",
+        "miDebuggerPath": "/usr/bin/arm-none-eabi-gdb",
+        "miDebuggerServerAddress": "localhost:3333"
+      },
+
+      {
+        "name": "Debug",
+        "type": "cppdbg",
+        "request": "launch",
+        "program": "${workspaceFolder}/build/STM32F429ZITx_HelloWorld.elf",
+        "args": [],
+        "stopAtEntry": false,
+        "cwd": "${workspaceFolder}",
+        "environment": [],
+        "externalConsole": true,
+        "MIMode": "gdb",
+        "miDebuggerPath": "/usr/bin/arm-none-eabi-gdb",
+        "miDebuggerServerAddress": "localhost:3333",
+        "setupCommands": [
+          //{ "text": "target remote localhost:3333" },
+          //{ "text": "file ${workspaceFolder}/build/STM32F429ZITx_HelloWorld.elf" },
+          //{ "text": "break main" }, // Set a breakpoint at main()
+          //{ "text": "monitor reset halt" },
+          //{ "text": "load" },
+          //{ "text": "monitor reset" },
+          
+          //{ "text": "run" }
+      ]
+    },
+    {
+      "name": "Build and Debug",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/build/STM32F429ZITx_HelloWorld.elf",
+      "args": [],
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}",
+      "environment": [],
+      "externalConsole": true,
+      "MIMode": "gdb",
+      "miDebuggerPath": "/usr/bin/arm-none-eabi-gdb",
+      "miDebuggerServerAddress": "localhost:3333",
+      "miDebuggerArgs": "-ex \"monitor reset\" -ex \"monitor reset halt\" -ex \"break main\" -ex \"run\" -ex \"set confirm off\" -ex \"set breakpoint pending on\" -ex \"break main\""
+  }
+    ],
+
+  }
+  

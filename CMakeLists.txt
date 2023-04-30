@@ -119,3 +119,4 @@ add_custom_command(TARGET ${PROJECT_NAME}
         COMMAND openocd -f board/stm32f429disc1.cfg -c "program ${CMAKE_BINARY_DIR}/${PROJECT_NAME}.elf verify reset exit"
         COMMENT "Executing ${PROJECT_NAME} without a debugger...")
 # https://www.justinmklam.com/posts/2017/10/vscode-debugger-setup/
+# openocd -f board/stm32f429disc1.cfg -c "program build/STM32F429ZITx_HelloWorld.elf verify reset exit"
