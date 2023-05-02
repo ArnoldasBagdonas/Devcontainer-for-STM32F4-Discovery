@@ -1,47 +1,8 @@
 {
-    "version": "0.2.0",
-    "configurations": [
-      {
-        "name": "Attaching to a running target",
-        "type": "cppdbg",
-        "request": "launch",
-        "program": "${workspaceFolder}/build/STM32F429ZITx_HelloWorld.elf",
-        "args": [],
-        "stopAtEntry": false,
-        "cwd": "${workspaceFolder}",
-        "environment": [],
-        "externalConsole": true,
-        "MIMode": "gdb",
-        "miDebuggerPath": "/usr/bin/arm-none-eabi-gdb",
-        "miDebuggerServerAddress": "localhost:3333"
-      },
-
-      {
-        "name": "Debug",
-        "type": "cppdbg",
-        "request": "launch",
-        "program": "${workspaceFolder}/build/STM32F429ZITx_HelloWorld.elf",
-        "args": [],
-        "stopAtEntry": false,
-        "cwd": "${workspaceFolder}",
-        "environment": [],
-        "externalConsole": true,
-        "MIMode": "gdb",
-        "miDebuggerPath": "/usr/bin/arm-none-eabi-gdb",
-        "miDebuggerServerAddress": "localhost:3333",
-        "setupCommands": [
-          //{ "text": "target remote localhost:3333" },
-          //{ "text": "file ${workspaceFolder}/build/STM32F429ZITx_HelloWorld.elf" },
-          //{ "text": "break main" }, // Set a breakpoint at main()
-          //{ "text": "monitor reset halt" },
-          //{ "text": "load" },
-          //{ "text": "monitor reset" },
-          
-          //{ "text": "run" }
-      ]
-    },
+  "version": "0.2.0",
+  "configurations": [
     {
-      "name": "Build and Debug",
+      "name": "Attaching to GDB server",
       "type": "cppdbg",
       "request": "launch",
       "program": "${workspaceFolder}/build/STM32F429ZITx_HelloWorld.elf",
@@ -52,10 +13,80 @@
       "externalConsole": true,
       "MIMode": "gdb",
       "miDebuggerPath": "/usr/bin/arm-none-eabi-gdb",
-      "miDebuggerServerAddress": "localhost:3333",
-      "miDebuggerArgs": "-ex \"monitor reset\" -ex \"monitor reset halt\" -ex \"break main\" -ex \"run\" -ex \"set confirm off\" -ex \"set breakpoint pending on\" -ex \"break main\""
-  }
-    ],
+      "miDebuggerServerAddress": "localhost:3333"
+    },
+    {
+      "name": "OpenOCD Debug",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/build/STM32F429ZITx_HelloWorld.elf",
+      "args": [],
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}",
+      "environment": [],
+      "externalConsole": true,
+      "MIMode": "gdb",
+      "miDebuggerPath": "/usr/bin/arm-none-eabi-gdb",
+      "miDebuggerServerAddress": "localhost:3333"
+      "preLaunchTask": "startOpenOCD",
+      "postDebugTask": "stopOpenOCD",
+    },
 
-  }
-  
+    {
+      "name": "Debug",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/build/STM32F429ZITx_HelloWorld.elf",
+      "args": [],
+      "preLaunchTask": "startOpenOCD",
+      "miDebuggerPath": "gdb-multiarch",
+      "miDebuggerArgs": ["${workspaceFolder}/build/STM32F429ZITx_HelloWorld.elf"],
+      "cwd": "${workspaceFolder}",
+      "environment": [],
+      "externalConsole": false,
+      "MIMode": "gdb",
+      "setupCommands": [
+          {
+              "text": "-target-select remote localhost:3333",
+              "description": "Connect to OpenOCD"
+          },
+          {
+              "text": "-file-exec-file ${workspaceFolder}/build/STM32F429ZITx_HelloWorld.elf",
+              "description": "Load the ELF file"
+          }
+      ],
+      "logging": {
+          "engineLogging": true,
+          "trace": true,
+          "traceResponse": true
+      }
+  },
+    
+    {
+      "name": "Debug with OpenOCD",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/build/STM32F429ZITx_HelloWorld.elf",
+      "args": [],
+      "stopAtEntry": true,
+      "cwd": "${workspaceFolder}",
+      "environment": [],
+      "externalConsole": true,
+      "MIMode": "gdb",
+      "miDebuggerPath": "arm-none-eabi-gdb",
+      "miDebuggerArgs": "-ex 'set architecture arm' -ex 'target extended-remote localhost:3333' -ex 'file build/STM32F429ZITx_HelloWorld.elf' -ex 'break main' -ex 'run",
+      //"preLaunchTask": "Start OpenOCD"
+    },
+    {
+      "name": "Debug STM32F429ZITx_HelloWorld",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/build/STM32F429ZITx_HelloWorld.elf",
+      "miDebuggerPath": "/usr/bin/arm-none-eabi-gdb",
+      //"miDebuggerArgs": "-ex 'set architecture arm' -ex 'target extended-remote localhost:3333' -ex 'break main' -ex 'run'",
+      "miDebuggerArgs": "-ex 'set architecture arm' -ex 'target extended-remote localhost:3333'",
+      "cwd": "${workspaceFolder}",
+      "externalConsole": true
+    }
+  ],
+}
