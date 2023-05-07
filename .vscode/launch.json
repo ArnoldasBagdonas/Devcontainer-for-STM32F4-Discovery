@@ -2,91 +2,57 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Attaching to GDB server",
+      //Ref: https://www.lagerdata.com/articles/vscode-and-gdb
+      "name": "Debug",
       "type": "cppdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/build/STM32F429ZITx_HelloWorld.elf",
-      "args": [],
-      "stopAtEntry": false,
-      "cwd": "${workspaceFolder}",
-      "environment": [],
-      "externalConsole": true,
+      "miDebuggerPath": "/usr/bin/gdb-multiarch",
+      "miDebuggerArgs": "--cd=${workspaceFolder} --nx",
       "MIMode": "gdb",
-      "miDebuggerPath": "/usr/bin/arm-none-eabi-gdb",
-      "miDebuggerServerAddress": "localhost:3333"
-    },
-    {
-      "name": "OpenOCD Debug",
-      "type": "cppdbg",
-      "request": "launch",
       "program": "${workspaceFolder}/build/STM32F429ZITx_HelloWorld.elf",
-      "args": [],
-      "stopAtEntry": false,
+      "setupCommands": [
+        {
+          "text": "set remotetimeout 5"
+        },
+        {
+          "text": "target extended-remote localhost:3333"
+        },
+        {
+          "text": "monitor reset halt"
+        },
+        {
+          "text": "file '${workspaceFolder}/build/STM32F429ZITx_HelloWorld.elf'"
+        },
+        {
+          "text": "load"
+        },
+        {
+          "text": "break main",
+          "ignoreFailures": true
+        }
+      ],
+      "launchCompleteCommand": "None",
+      "externalConsole": false,
       "cwd": "${workspaceFolder}",
-      "environment": [],
-      "externalConsole": true,
-      "MIMode": "gdb",
-      "miDebuggerPath": "/usr/bin/arm-none-eabi-gdb",
-      "miDebuggerServerAddress": "localhost:3333"
       "preLaunchTask": "startOpenOCD",
       "postDebugTask": "stopOpenOCD",
     },
 
     {
-      "name": "Debug",
+      "name": "Attach to running target",
       "type": "cppdbg",
       "request": "launch",
       "program": "${workspaceFolder}/build/STM32F429ZITx_HelloWorld.elf",
       "args": [],
-      "preLaunchTask": "startOpenOCD",
-      "miDebuggerPath": "gdb-multiarch",
-      "miDebuggerArgs": ["${workspaceFolder}/build/STM32F429ZITx_HelloWorld.elf"],
-      "cwd": "${workspaceFolder}",
-      "environment": [],
-      "externalConsole": false,
-      "MIMode": "gdb",
-      "setupCommands": [
-          {
-              "text": "-target-select remote localhost:3333",
-              "description": "Connect to OpenOCD"
-          },
-          {
-              "text": "-file-exec-file ${workspaceFolder}/build/STM32F429ZITx_HelloWorld.elf",
-              "description": "Load the ELF file"
-          }
-      ],
-      "logging": {
-          "engineLogging": true,
-          "trace": true,
-          "traceResponse": true
-      }
-  },
-    
-    {
-      "name": "Debug with OpenOCD",
-      "type": "cppdbg",
-      "request": "launch",
-      "program": "${workspaceFolder}/build/STM32F429ZITx_HelloWorld.elf",
-      "args": [],
-      "stopAtEntry": true,
+      "stopAtEntry": false,
       "cwd": "${workspaceFolder}",
       "environment": [],
       "externalConsole": true,
       "MIMode": "gdb",
-      "miDebuggerPath": "arm-none-eabi-gdb",
-      "miDebuggerArgs": "-ex 'set architecture arm' -ex 'target extended-remote localhost:3333' -ex 'file build/STM32F429ZITx_HelloWorld.elf' -ex 'break main' -ex 'run",
-      //"preLaunchTask": "Start OpenOCD"
-    },
-    {
-      "name": "Debug STM32F429ZITx_HelloWorld",
-      "type": "cppdbg",
-      "request": "launch",
-      "program": "${workspaceFolder}/build/STM32F429ZITx_HelloWorld.elf",
-      "miDebuggerPath": "/usr/bin/arm-none-eabi-gdb",
-      //"miDebuggerArgs": "-ex 'set architecture arm' -ex 'target extended-remote localhost:3333' -ex 'break main' -ex 'run'",
-      "miDebuggerArgs": "-ex 'set architecture arm' -ex 'target extended-remote localhost:3333'",
-      "cwd": "${workspaceFolder}",
-      "externalConsole": true
+      "miDebuggerPath": "/usr/bin/gdb-multiarch",
+      "miDebuggerServerAddress": "localhost:3333",
+      "preLaunchTask": "startOpenOCD",
+      "postDebugTask": "stopOpenOCD",
     }
-  ],
+  ]
 }

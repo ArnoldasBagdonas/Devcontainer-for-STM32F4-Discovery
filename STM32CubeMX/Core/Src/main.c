@@ -651,11 +651,17 @@ void StartDefaultTask(void const * argument)
   /* init code for USB_HOST */
   MX_USB_HOST_Init();
   /* USER CODE BEGIN 5 */
+  for(int i = 0; i < 50; i++)
+  {
+    osDelay(100);
+    HAL_GPIO_TogglePin(LD4_GPIO_Port, LD4_Pin);
+  }
+
   /* Infinite loop */
   for(;;)
   {
     #if (1)
-    osDelay(250);
+    osDelay(1000);
     HAL_GPIO_TogglePin(LD4_GPIO_Port, LD4_Pin);
     #else
     osDelay(1);
