@@ -1,140 +1,170 @@
 # Devcontainer for STM32F4 Discovery
 
-This devcontainer creates an environment based on the latest Ubuntu/Alpine Linux image, with various software development tools installed. The following tools are included:
+This project sets up a complete development environment for building and flashing applications onto an STM32F4 Discovery board.
+It includes everything from compiler toolchains and debugging utilities to documentation generators and font packages — all inside a
+Docker-based development container customized for use with Visual Studio Code's Devcontainer support and WSL2.
 
-- `git`: Distributed version control system for source code management and collaboration.
-- `make`: Build automation tool used to build and manage complex software projects.
-- `gcc`: Compiler for the C programming language.
-- `g++`: Compiler for the C++ programming language.
-- `libc-dev`: Development libraries and header files for the C library, used for building and linking programs.
-- `libstdc++`: C++ standard library implementation.
-- `linux-headers`: Header files required for building kernel modules and other system software.
-- `bash`: Popular shell and command language used for scripting and interactive command-line usage.
-- `cmake`: Cross-platform build system generator used to build, test, and package software.
-- `file`: Utility used to determine the file type of a file.
-- `gdb`: Debugger for C, C++, and other programming languages.
-- `openocd`: Tool used to debug and program microcontrollers.
-- `python3`: Python programming language version 3.x.
-- `py3-pip`: Python package installer, used to install and manage Python packages.
-- `ninja`: Fast build system similar to Make, used to build and test software.
-- `gcc-arm-none-eabi`: Toolchain for ARM Cortex-M and Cortex-R processors, used to develop embedded systems.
-- `pyelftools`: Python library used for analyzing ELF files and DWARF debugging information.
+## USB Setup Workflow for WSL2 + Devcontainer
 
-This devcontainer is useful for developing and testing software, especially for embedded systems development. To use it, simply build the Docker image using the provided Dockerfile, then start a devcontainer from the resulting image.
+> **Important**: The USB device must be connected and attached to WSL **before launching the devcontainer or Docker image**.
 
-## Connect USB devices to Docker devcontainer
+WSL (Windows Subsystem for Linux) enables running a Linux environment on a Windows host. However, [connecting USB devices](https://learn.microsoft.com/en-us/windows/wsl/connect-usb) to
+WSL requires specific setup. The following steps describe how to make a USB device, such as the STM32F4 Discovery board,
+accessible within WSL and the devcontainer environment.
 
-> **_NOTE:_**  First connect USB hardware and select the bus ID of the device you’d like to attach to WSL. Then launch the devcontainer or dockerimage!
+### Step 1. Install or Update `usbipd-win`
 
-WSL (Windows Subsystem for Linux) provides a convenient way to run a Linux environment on a Windows machine. However, [connecting USB devices to WSL](https://learn.microsoft.com/en-us/windows/wsl/connect-usb) can be a bit tricky. In this guide, we'll go over the steps required to attach a physical USB device to your WSL environment (or running Docker devcontainer), so you can use it in your Linux applications. Whether you need to connect a USB drive, a printer, or some other USB peripheral, this guide will show you how to get it up and running.
+Download and install the latest version of usbipd-win from:
 
-- Install the latest release USB/IP driver on the Windows host machine. You can find the USB/IP driver for Windows on the official website: https://github.com/dorssel/usbipd-win/releases.
+- [https://github.com/dorssel/usbipd-win/releases](https://github.com/dorssel/usbipd-win/releases)
 
-- Plug in the USB device you want to use on the Windows host machine.
+### Step 2. Verify WSL Kernel Version
 
-- List all of the USB devices connected to Windows by opening PowerShell in administrator mode and entering the command:
+In PowerShell:
+
+```powershell
+wsl uname -a
 ```
-usbipd wsl list
+
+Look for a kernel version ≥ **5.10.60.1**. If an update is needed, run:
+
+```powershell
+wsl --shutdown
+wsl --update
 ```
-- Select the bus ID of the device you’d like to attach to WSL and run this command. You’ll be prompted by WSL for a password to run a sudo command. The Linux distribution to be attached must be your default distribution. (See the [Basic comands for WSL doc](https://learn.microsoft.com/en-us/windows/wsl/basic-commands#set-default-linux-distribution) to change your default distribution).
+
+### Step 3: Connect the USB Device
+
+Plug the ST-LINK USB interface of the STM32F4 Discovery board into the host machine.
+
+### Step 4: Identify the USB Device
+
+In administrator PowerShell, list available USB devices:
+
+```powershell
+usbipd list
 ```
-usbipd wsl attach --busid <busid>
+
+Locate the relevant bus ID (e.g., **4-4**).
+
+### Step 5: Bind the USB Device
+
+In the same administrator PowerShell session:
+
+```powershell
+usbipd bind --busid 4-4
 ```
-- Open Ubuntu (or your preferred WSL command line) and list the attached USB devices using the command. You should see the device you just attached and be able to interact with it using normal Linux tools. Depending on your application, you may need to configure udev rules to allow non-root users to access the device:
+
+### Step 6. Start WSL to Keep It Active
+
+In a new PowerShell terminal (non-admin), start WSL:
+
+```powershell
+wsl
 ```
+
+Inside the Linux shell, run:
+
+```bash
+lsusb  # note: should NOT yet show your device
+```
+
+### Step 7. Attach the USB Device to WSL
+
+Back in non-admin PowerShell:
+
+```powershell
+usbipd attach --wsl --busid 4-4
+```
+
+### Step 8: Confirm Device Availability in WSL
+
+Inside the Linux shell, run:
+```bash
 lsusb
 ```
-- Once you are done using the device in WSL, you can either physically disconnect the USB device or run this command from PowerShell in administrator mode:
-```
-usbipd wsl detach --busid <busid>
-```
 
+The USB device should now appear and be accessible to Linux tools such as openocd.
 
-## Getting started
+## Building the Example
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+To perform an out-of-source build:
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+1. Create a directory for the build artifacts:
+   ```bash
+   mkdir build
+   ```
+2. Generate build files using cmake, providing the path to the toolchain file:
+   ```bash
+   cmake -B build/ -S . -DCMAKE_TOOLCHAIN_FILE=cmake/gcc_stm32f4.cmake
+   ```
+3. CMake will generate the build files in the `build/` directory based on the CMakeLists.txt file in the source code directory.
 
-## Add your files
+5. Build the project:
+   ```bash
+   cmake --build build/
+   ```
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
+6. The output binaries and artifacts will be placed in the `build/` directory, separate from the source files.
 
-```
-cd existing_repo
-git remote add origin https://gitlab.com/bagdoportfolio/devcontainer-for-stm32f4-discovery.git
-git branch -M main
-git push -uf origin main
-```
+7. To flash the device (from the build directory), use the following target:
+   ```bash
+   cmake --build build/ --target flash
+   ```
 
-## Integrate with your tools
+## Features Integrated in VSCode
 
-- [ ] [Set up project integrations](https://gitlab.com/bagdoportfolio/devcontainer-for-stm32f4-discovery/-/settings/integrations)
+The development environment integrates a set of preconfigured tasks and debugging configurations within Visual Studio Code to streamline building, flashing, and debugging firmware for the STM32F4 Discovery board.
 
-## Collaborate with your team
+### Tasks
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Automatically merge when pipeline succeeds](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
+Several tasks are defined to automate common operations. These can be accessed through `Ctrl+Shift+P` → `Run Task`:
 
-## Test and Deploy
+-  flashWithOpenOCD
 
-Use the built-in continuous integration in GitLab.
+   Flashes the firmware binary to the STM32F4 Discovery board using OpenOCD:
+   ```bash
+   openocd -f interface/stlink-v2-1.cfg -f target/stm32f4x.cfg \
+   -c "program ${command:cmake.launchTargetPath} verify reset" -c exit
+   ```
 
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing(SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+-  startOpenOCD
 
-***
+   Launches the OpenOCD server in the background, using the stm32f429disc1.cfg board configuration. This step is required before initiating a debug session.
 
-# Editing this README
+-  stopOpenOCD
+   
+   Terminates all active tasks, including OpenOCD. This task is automatically executed after a debug session concludes.
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thank you to [makeareadme.com](https://www.makeareadme.com/) for this template.
+### Debug Configurations
+Two debug configurations are included in `.vscode/launch.json`, accessible via the **Run and Debug panel**:
+-  Debug
 
-## Suggestions for a good README
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+   Launches a debugging session using GDB (gdb-multiarch) by:
 
-## Name
-Choose a self-explaining name for your project.
+   -  Starting OpenOCD in the background.
+   -  Loading the compiled ELF binary.
+   -  Setting a breakpoint at main.
+   -  Initiating the debugging session.
+   -  Terminating OpenOCD upon exit.
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+-  Attach to running target
+   
+   Connects GDB to a target device already running under OpenOCD. This configuration does not reload the firmware and is useful for runtime inspection or debugging previously flashed applications.
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+## Getting Started
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+To get started with the examples, follow these steps:
 
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+1. Clone this repository: `git clone https://gitlab.com/bagdoportfolio/devcontainer-for-stm32f4-discovery.git`
+2. Follow the instructions provided in README to build and run the example.
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
-
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
-
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+Make sure you have Docker installed and properly configured on your system.
 
 ## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
-
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
-
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+Contributions to this repository are welcome! If you have additional examples, improvements, or bug fixes, feel free to submit a pull request. Please refer to the CONTRIBUTING.md file for guidelines on contributing.
 
 ## License
-For open source projects, say how it is licensed.
 
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+This repository is licensed under the MIT License. See the LICENSE.md file for more information.
