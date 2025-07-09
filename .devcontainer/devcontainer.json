@@ -5,7 +5,7 @@
 	"build": {
 		"dockerfile": "Dockerfile.debian"
 	},
-	
+
 	"extensions": [
 		//use "code --list-extensions" to export the Visual Studio Code extensions
 		"ms-vscode.cpptools-extension-pack",
