@@ -3,14 +3,12 @@
 {
 	"name": "STM32 Toolchain",
 	"build": {
-		"dockerfile": "Dockerfile.ubuntu"
+		"dockerfile": "Dockerfile.debian"
 	},
 	
 	"extensions": [
 		//use "code --list-extensions" to export the Visual Studio Code extensions
-		"ms-vscode.cmake-tools",
-		"ms-vscode.cpptools",
-		"marus25.cortex-debug",
+		"ms-vscode.cpptools-extension-pack",
     ],
 
 	"settings": {
@@ -31,16 +29,17 @@
 	// Configure tool-specific properties.
 	// "customizations": {},
 
+	// Attach physical USB device as per instructions bellow:
+	// https://learn.microsoft.com/en-us/windows/wsl/connect-usb
 	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
-	// "remoteUser": "root"
-
+	// only root user has access to usb devices in devcontainer!
+	"remoteUser": "root"
+	//"remoteUser": "vscode",
 	"runArgs": [
 		"--privileged",
 		//"--device=/dev:/dev"
 		"--device=/dev/bus/usb:/dev/bus/usb"
 	  ],
-	// Attach physical USB device as per instructions bellow:
-	// https://learn.microsoft.com/en-us/windows/wsl/connect-usb
 	  
 	  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind",
 	  "workspaceFolder": "/workspace"
