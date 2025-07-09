@@ -1,95 +1,48 @@
-# Define the toolchain
+# gcc_stm32f4_toolchain.cmake
+# Toolchain file for STM32F4 Cortex-M4 cross-compilation with arm-none-eabi-gcc
+
+# Set the system name and processor architecture
 set(CMAKE_SYSTEM_NAME Generic)
-set(CMAKE_SYSTEM_PROCESSOR arm)
+set(CMAKE_SYSTEM_PROCESSOR cortex-m4)
 
-# Define the toolchain path
-#SET(TOOLCHAIN_PATH "/usr/bin")
+# Specify the cross compiler prefix
+set(TOOLCHAIN_PREFIX arm-none-eabi-)
 
-# Define the toolchain prefix
-SET(TOOLCHAIN_PREFIX "arm-none-eabi-")
+# Specify the compilers
+set(CMAKE_C_COMPILER   ${TOOLCHAIN_PREFIX}gcc)
+set(CMAKE_CXX_COMPILER ${TOOLCHAIN_PREFIX}g++)
+set(CMAKE_ASM_COMPILER ${TOOLCHAIN_PREFIX}gcc)
 
-# Define the sysroot
-#SET(CMAKE_SYSROOT "/path/to/sysroot")
+# Specify objcopy and size tools
+set(CMAKE_OBJCOPY      ${TOOLCHAIN_PREFIX}objcopy)
+set(CMAKE_SIZE         ${TOOLCHAIN_PREFIX}size)
 
-# Setting compilers
-if(DEFINED TOOLCHAIN_PATH)
-set(CMAKE_ASM_COMPILER   "${TOOLCHAIN_PATH}/${TOOLCHAIN_PREFIX}gcc")        # Set path to assembler tool (using arguments "-x assembler-with-cpp")
-set(CMAKE_C_COMPILER     "${TOOLCHAIN_PATH}/${TOOLCHAIN_PREFIX}gcc")        # Set path to C compiler
-set(CMAKE_CXX_COMPILER   "${TOOLCHAIN_PATH}/${TOOLCHAIN_PREFIX}g++")        # Set path to C++ compiler
-set(CMAKE_LINKER         "${TOOLCHAIN_PATH}/${TOOLCHAIN_PREFIX}ld")         # Set path to linker tool
-set(CMAKE_OBJCOPY        "${TOOLCHAIN_PATH}/${TOOLCHAIN_PREFIX}objcopy")    # Set path to object copy tool
-set(CMAKE_RANLIB         "${TOOLCHAIN_PATH}/${TOOLCHAIN_PREFIX}ranlib")     # Set path to ranlib tool
-set(CMAKE_SIZE_UTIL      "${TOOLCHAIN_PATH}/${TOOLCHAIN_PREFIX}size")       # Set path to size tool
-set(CMAKE_STRIP          "${TOOLCHAIN_PATH}/${TOOLCHAIN_PREFIX}strip")      # Set path to strip tool
-else()
-set(CMAKE_AR             "${TOOLCHAIN_PREFIX}ar")                           # Set path to archive library tool
-set(CMAKE_ASM_COMPILER   "${TOOLCHAIN_PREFIX}gcc")                          # Set path to assembler tool (using arguments "-x assembler-with-cpp")
-set(CMAKE_C_COMPILER     "${TOOLCHAIN_PREFIX}gcc")                          # Set path to C compiler
-set(CMAKE_CXX_COMPILER   "${TOOLCHAIN_PREFIX}g++")                          # Set path to C++ compiler
-set(CMAKE_LINKER         "${TOOLCHAIN_PREFIX}ld")                           # Set path to linker tool
-set(CMAKE_OBJCOPY        "${TOOLCHAIN_PREFIX}objcopy")                      # Set path to object copy tool
-set(CMAKE_RANLIB         "${TOOLCHAIN_PREFIX}ranlib")                       # Set path to ranlib tool
-set(CMAKE_SIZE_UTIL      "${TOOLCHAIN_PREFIX}size")                         # Set path to size tool
-set(CMAKE_STRIP          "${TOOLCHAIN_PREFIX}strip")                        # Set path to strip tool
-endif()
+# Compiler flags common for all languages
+set(MCU_FLAGS "-mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=hard")
+# set(MCU_FLAGS
+#     -mcpu=cortex-m4
+#     -mthumb
+#     -mfpu=fpv4-sp-d16
+#     -mfloat-abi=hard
+# )
 
-# Define the compiler and linker flags
-#######################################
-# CFLAGS
-#######################################
-# cpu
-set(CPU "-mcpu=cortex-m4")
+# C flags
+set(CMAKE_C_FLAGS "${MCU_FLAGS} -Wall -fdata-sections -ffunction-sections")
 
-# fpu
-set(FPU "-mfpu=fpv4-sp-d16")
+# ASM flags
+set(CMAKE_ASM_FLAGS "${MCU_FLAGS} -Wall -fdata-sections -ffunction-sections")
 
-# float-abi
-set(FLOAT-ABI "-mfloat-abi=hard")
+# Linker flags placeholder (usually set in CMakeLists.txt)
+set(CMAKE_EXE_LINKER_FLAGS "${MCU_FLAGS} -specs=nano.specs -Wl,--gc-sections")
 
-# mcu
-set(MCU "${CPU} -mthumb ${FPU} ${FLOAT-ABI}")
+# Optionally disable standard libraries (you can override this in your project)
+set(CMAKE_C_STANDARD_LIBRARIES "-lc -lm -lnosys")
 
-# macros for gcc
-# AS defines
-set(AS_DEFS "")
+# Set environment path if needed (uncomment and adjust if gcc is not in PATH)
+# set(ENV{PATH} "/path/to/your/gcc/bin:$ENV{PATH}")
 
-# C defines
-set(C_DEFS "-DUSE_HAL_DRIVER -DSTM32F429xx")
-
-
-# link script
-set(LDSCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/STM32CubeMX/STM32F429ZITx_FLASH.ld")
-
-# libraries
-set(LIBS "-lc -lm -lnosys")
-set(LIBDIR "")
-
-# define CMAKE FLAGS for different build types (debug, release, minsizerel, relwithdebinfo)
-set(CMAKE_C_FLAGS_DEBUG "${MCU} ${C_DEFS}  --specs=nosys.specs -Wall -fdata-sections -ffunction-sections -g -O0")
-set(CMAKE_C_FLAGS_RELEASE "${MCU} ${C_DEFS}  --specs=nosys.specs -Wall -fdata-sections -ffunction-sections -O3")
-set(CMAKE_C_FLAGS_MINSIZEREL "${MCU} ${C_DEFS}  --specs=nosys.specs -Wall -fdata-sections -ffunction-sections -Os")
-set(CMAKE_C_FLAGS_RELWITHDEBINFO "${MCU} ${C_DEFS}  --specs=nosys.specs -Wall -fdata-sections -ffunction-sections -g -O2")
-
-
-set(CMAKE_CXX_FLAGS_DEBUG "${MCU} ${C_DEFS}  --specs=nosys.specs -Wall -fdata-sections -ffunction-sections -g -O0")
-set(CMAKE_CXX_FLAGS_RELEASE "${MCU} ${C_DEFS}  --specs=nosys.specs -Wall -fdata-sections -ffunction-sections -O3")
-set(CMAKE_CXX_FLAGS_MINSIZEREL "${MCU} ${C_DEFS}  --specs=nosys.specs -Wall -fdata-sections -ffunction-sections -Os")
-set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${MCU} ${C_DEFS}  --specs=nosys.specs -Wall -fdata-sections -ffunction-sections -g -O2")
-
-set(CMAKE_CXX_FLAGS_DEBUG "${MCU} ${C_DEFS}  --specs=nosys.specs -Wall -fdata-sections -ffunction-sections -g -O0")
-set(CMAKE_CXX_FLAGS_RELEASE "${MCU} ${C_DEFS}  --specs=nosys.specs -Wall -fdata-sections -ffunction-sections -O3")
-set(CMAKE_CXX_FLAGS_MINSIZEREL "${MCU} ${C_DEFS}  --specs=nosys.specs -Wall -fdata-sections -ffunction-sections -Os")
-set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${MCU} ${C_DEFS}  --specs=nosys.specs -Wall -fdata-sections -ffunction-sections -g -O2")
-
-set(CMAKE_ASM_FLAGS_DEBUG "-x assembler-with-cpp -g -O0")
-set(CMAKE_ASM_FLAGS_RELEASE "-x assembler-with-cpp -O3")
-set(CMAKE_ASM_FLAGS_MINSIZEREL "-x assembler-with-cpp -Os")
-set(CMAKE_ASM_FLAGS_RELWITHDEBINFO "-x assembler-with-cpp -g -O2")
-
-set(CMAKE_EXE_LINKER_FLAGS "${MCU} -specs=nano.specs ${LIBDIR} ${LIBS}")
-
-set(CMAKE_C_STANDARD 11)
-set(CMAKE_CXX_STANDARD 17)
-
-#Ref:   https://blog.feabhas.com/2021/07/cmake-part-2-release-and-debug-builds/
-#       https://five-embeddev.com/baremetal/cmake/
+# Prevent CMake from using the host system's compiler
+set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
+set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
+set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
+set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY)

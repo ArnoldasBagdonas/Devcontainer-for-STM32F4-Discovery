@@ -1,122 +1,143 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.15)
+project(STM32CubeMX C ASM)
 
-# Set the toolchain file
-set(CMAKE_TOOLCHAIN_FILE ${CMAKE_SOURCE_DIR}/cmake/gcc_stm32f4.cmake)
+set(PROJECT_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/STM32CubeMX)
 
-# Define project name, languages, version, and description
-project(STM32F429ZITx_HelloWorld
-        VERSION 1.0
-        DESCRIPTION "A simple 'Hello World' program for the STM32F429ZITx microcontroller."
-        LANGUAGES C ASM)
+# Use BIN_NAME from variant if defined, else fallback to project name
+if(NOT DEFINED BIN_NAME OR BIN_NAME STREQUAL "")
+  set(BIN_NAME ${PROJECT_NAME})
+endif()
 
-######################################
-# source
-######################################
-# C sources
+# Build output directory
+set(BUILD_DIR ${CMAKE_BINARY_DIR}/${BIN_NAME})
+file(MAKE_DIRECTORY ${BUILD_DIR})
+
+# Preprocessor definitions
+add_compile_definitions(
+    USE_HAL_DRIVER
+    STM32F429xx
+)
+
+# Include directories
+include_directories(
+    ${PROJECT_ROOT}/Core/Inc
+    ${PROJECT_ROOT}/USB_HOST/App
+    ${PROJECT_ROOT}/USB_HOST/Target
+    ${PROJECT_ROOT}/Drivers/STM32F4xx_HAL_Driver/Inc
+    ${PROJECT_ROOT}/Drivers/STM32F4xx_HAL_Driver/Inc/Legacy
+    ${PROJECT_ROOT}/Middlewares/Third_Party/FreeRTOS/Source/include
+    ${PROJECT_ROOT}/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS
+    ${PROJECT_ROOT}/Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F
+    ${PROJECT_ROOT}/Middlewares/ST/STM32_USB_Host_Library/Core/Inc
+    ${PROJECT_ROOT}/Middlewares/ST/STM32_USB_Host_Library/Class/CDC/Inc
+    ${PROJECT_ROOT}/Drivers/CMSIS/Device/ST/STM32F4xx/Include
+    ${PROJECT_ROOT}/Drivers/CMSIS/Include
+)
+
+# Source files
 set(C_SOURCES
-${CMAKE_CURRENT_SOURCE_DIR}/STM32CubeMX/Core/Src/main.c
-${CMAKE_CURRENT_SOURCE_DIR}/STM32CubeMX/Core/Src/freertos.c
-${CMAKE_CURRENT_SOURCE_DIR}/STM32CubeMX/Core/Src/stm32f4xx_it.c
-${CMAKE_CURRENT_SOURCE_DIR}/STM32CubeMX/Core/Src/stm32f4xx_hal_msp.c
-${CMAKE_CURRENT_SOURCE_DIR}/STM32CubeMX/Core/Src/stm32f4xx_hal_timebase_tim.c
-${CMAKE_CURRENT_SOURCE_DIR}/STM32CubeMX/USB_HOST/App/usb_host.c
-${CMAKE_CURRENT_SOURCE_DIR}/STM32CubeMX/USB_HOST/Target/usbh_conf.c
-${CMAKE_CURRENT_SOURCE_DIR}/STM32CubeMX/USB_HOST/Target/usbh_platform.c
-${CMAKE_CURRENT_SOURCE_DIR}/STM32CubeMX/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hcd.c
-${CMAKE_CURRENT_SOURCE_DIR}/STM32CubeMX/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_usb.c
-${CMAKE_CURRENT_SOURCE_DIR}/STM32CubeMX/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc.c
-${CMAKE_CURRENT_SOURCE_DIR}/STM32CubeMX/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc_ex.c
-${CMAKE_CURRENT_SOURCE_DIR}/STM32CubeMX/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash.c
-${CMAKE_CURRENT_SOURCE_DIR}/STM32CubeMX/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ex.c
-${CMAKE_CURRENT_SOURCE_DIR}/STM32CubeMX/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ramfunc.c
-${CMAKE_CURRENT_SOURCE_DIR}/STM32CubeMX/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_gpio.c
-${CMAKE_CURRENT_SOURCE_DIR}/STM32CubeMX/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma_ex.c
-${CMAKE_CURRENT_SOURCE_DIR}/STM32CubeMX/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma.c
-${CMAKE_CURRENT_SOURCE_DIR}/STM32CubeMX/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr.c
-${CMAKE_CURRENT_SOURCE_DIR}/STM32CubeMX/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr_ex.c
-${CMAKE_CURRENT_SOURCE_DIR}/STM32CubeMX/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cortex.c
-${CMAKE_CURRENT_SOURCE_DIR}/STM32CubeMX/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.c
-${CMAKE_CURRENT_SOURCE_DIR}/STM32CubeMX/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_exti.c
-${CMAKE_CURRENT_SOURCE_DIR}/STM32CubeMX/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_crc.c
-${CMAKE_CURRENT_SOURCE_DIR}/STM32CubeMX/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma2d.c
-${CMAKE_CURRENT_SOURCE_DIR}/STM32CubeMX/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_fmc.c
-${CMAKE_CURRENT_SOURCE_DIR}/STM32CubeMX/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sdram.c
-${CMAKE_CURRENT_SOURCE_DIR}/STM32CubeMX/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2c.c
-${CMAKE_CURRENT_SOURCE_DIR}/STM32CubeMX/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2c_ex.c
-${CMAKE_CURRENT_SOURCE_DIR}/STM32CubeMX/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_ltdc.c
-${CMAKE_CURRENT_SOURCE_DIR}/STM32CubeMX/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_ltdc_ex.c
-${CMAKE_CURRENT_SOURCE_DIR}/STM32CubeMX/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dsi.c
-${CMAKE_CURRENT_SOURCE_DIR}/STM32CubeMX/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spi.c
-${CMAKE_CURRENT_SOURCE_DIR}/STM32CubeMX/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.c
-${CMAKE_CURRENT_SOURCE_DIR}/STM32CubeMX/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim_ex.c
-${CMAKE_CURRENT_SOURCE_DIR}/STM32CubeMX/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_uart.c
-${CMAKE_CURRENT_SOURCE_DIR}/STM32CubeMX/Core/Src/system_stm32f4xx.c
-${CMAKE_CURRENT_SOURCE_DIR}/STM32CubeMX/Middlewares/Third_Party/FreeRTOS/Source/croutine.c
-${CMAKE_CURRENT_SOURCE_DIR}/STM32CubeMX/Middlewares/Third_Party/FreeRTOS/Source/event_groups.c
-${CMAKE_CURRENT_SOURCE_DIR}/STM32CubeMX/Middlewares/Third_Party/FreeRTOS/Source/list.c
-${CMAKE_CURRENT_SOURCE_DIR}/STM32CubeMX/Middlewares/Third_Party/FreeRTOS/Source/queue.c
-${CMAKE_CURRENT_SOURCE_DIR}/STM32CubeMX/Middlewares/Third_Party/FreeRTOS/Source/stream_buffer.c
-${CMAKE_CURRENT_SOURCE_DIR}/STM32CubeMX/Middlewares/Third_Party/FreeRTOS/Source/tasks.c
-${CMAKE_CURRENT_SOURCE_DIR}/STM32CubeMX/Middlewares/Third_Party/FreeRTOS/Source/timers.c
-${CMAKE_CURRENT_SOURCE_DIR}/STM32CubeMX/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.c
-${CMAKE_CURRENT_SOURCE_DIR}/STM32CubeMX/Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c
-${CMAKE_CURRENT_SOURCE_DIR}/STM32CubeMX/Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.c
-${CMAKE_CURRENT_SOURCE_DIR}/STM32CubeMX/Middlewares/ST/STM32_USB_Host_Library/Core/Src/usbh_core.c
-${CMAKE_CURRENT_SOURCE_DIR}/STM32CubeMX/Middlewares/ST/STM32_USB_Host_Library/Core/Src/usbh_ctlreq.c
-${CMAKE_CURRENT_SOURCE_DIR}/STM32CubeMX/Middlewares/ST/STM32_USB_Host_Library/Core/Src/usbh_ioreq.c
-${CMAKE_CURRENT_SOURCE_DIR}/STM32CubeMX/Middlewares/ST/STM32_USB_Host_Library/Core/Src/usbh_pipes.c
-${CMAKE_CURRENT_SOURCE_DIR}/STM32CubeMX/Middlewares/ST/STM32_USB_Host_Library/Class/CDC/Src/usbh_cdc.c
+    ${PROJECT_ROOT}/Core/Src/main.c
+    ${PROJECT_ROOT}/Core/Src/freertos.c
+    ${PROJECT_ROOT}/Core/Src/stm32f4xx_it.c
+    ${PROJECT_ROOT}/Core/Src/stm32f4xx_hal_msp.c
+    ${PROJECT_ROOT}/Core/Src/stm32f4xx_hal_timebase_tim.c
+    ${PROJECT_ROOT}/USB_HOST/App/usb_host.c
+    ${PROJECT_ROOT}/USB_HOST/Target/usbh_conf.c
+    ${PROJECT_ROOT}/USB_HOST/Target/usbh_platform.c
+    ${PROJECT_ROOT}/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hcd.c
+    ${PROJECT_ROOT}/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_usb.c
+    ${PROJECT_ROOT}/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc.c
+    ${PROJECT_ROOT}/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc_ex.c
+    ${PROJECT_ROOT}/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash.c
+    ${PROJECT_ROOT}/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ex.c
+    ${PROJECT_ROOT}/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ramfunc.c
+    ${PROJECT_ROOT}/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_gpio.c
+    ${PROJECT_ROOT}/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma_ex.c
+    ${PROJECT_ROOT}/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma.c
+    ${PROJECT_ROOT}/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr.c
+    ${PROJECT_ROOT}/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr_ex.c
+    ${PROJECT_ROOT}/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cortex.c
+    ${PROJECT_ROOT}/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.c
+    ${PROJECT_ROOT}/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_exti.c
+    ${PROJECT_ROOT}/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_crc.c
+    ${PROJECT_ROOT}/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma2d.c
+    ${PROJECT_ROOT}/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_fmc.c
+    ${PROJECT_ROOT}/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sdram.c
+    ${PROJECT_ROOT}/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2c.c
+    ${PROJECT_ROOT}/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2c_ex.c
+    ${PROJECT_ROOT}/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_ltdc.c
+    ${PROJECT_ROOT}/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_ltdc_ex.c
+    ${PROJECT_ROOT}/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dsi.c
+    ${PROJECT_ROOT}/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spi.c
+    ${PROJECT_ROOT}/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.c
+    ${PROJECT_ROOT}/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim_ex.c
+    ${PROJECT_ROOT}/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_uart.c
+    ${PROJECT_ROOT}/Core/Src/system_stm32f4xx.c
+    ${PROJECT_ROOT}/Middlewares/Third_Party/FreeRTOS/Source/croutine.c
+    ${PROJECT_ROOT}/Middlewares/Third_Party/FreeRTOS/Source/event_groups.c
+    ${PROJECT_ROOT}/Middlewares/Third_Party/FreeRTOS/Source/list.c
+    ${PROJECT_ROOT}/Middlewares/Third_Party/FreeRTOS/Source/queue.c
+    ${PROJECT_ROOT}/Middlewares/Third_Party/FreeRTOS/Source/stream_buffer.c
+    ${PROJECT_ROOT}/Middlewares/Third_Party/FreeRTOS/Source/tasks.c
+    ${PROJECT_ROOT}/Middlewares/Third_Party/FreeRTOS/Source/timers.c
+    ${PROJECT_ROOT}/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.c
+    ${PROJECT_ROOT}/Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c
+    ${PROJECT_ROOT}/Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.c
+    ${PROJECT_ROOT}/Middlewares/ST/STM32_USB_Host_Library/Core/Src/usbh_core.c
+    ${PROJECT_ROOT}/Middlewares/ST/STM32_USB_Host_Library/Core/Src/usbh_ctlreq.c
+    ${PROJECT_ROOT}/Middlewares/ST/STM32_USB_Host_Library/Core/Src/usbh_ioreq.c
+    ${PROJECT_ROOT}/Middlewares/ST/STM32_USB_Host_Library/Core/Src/usbh_pipes.c
+    ${PROJECT_ROOT}/Middlewares/ST/STM32_USB_Host_Library/Class/CDC/Src/usbh_cdc.c
 )
 
-# ASM sources
 set(ASM_SOURCES
-${CMAKE_CURRENT_SOURCE_DIR}/STM32CubeMX/startup_stm32f429xx.s
+    ${PROJECT_ROOT}/startup_stm32f429xx.s
 )
 
-# Specify the source files
-add_executable(${PROJECT_NAME} 
+# Add executable target
+add_executable(${PROJECT_NAME}.elf
     ${C_SOURCES}
     ${ASM_SOURCES}
 )
 
+# Linker script path (adjust if needed)
+set(LINKER_SCRIPT ${PROJECT_ROOT}/STM32F429ZITx_FLASH.ld)
 
-# AS includes
-set(AS_INCLUDES
-${CMAKE_CURRENT_SOURCE_DIR}/STM32CubeMX/Core/Inc
+# Linker options - MCU flags and linker script should come from toolchain
+target_link_options(${PROJECT_NAME}.elf PRIVATE
+    #-specs=nano.specs
+    -T${LINKER_SCRIPT}
+    -Wl,-Map=${BUILD_DIR}/${PROJECT_NAME}.map,--cref
+    -Wl,--gc-sections
 )
 
-# C includes
-set(C_INCLUDES
-${CMAKE_CURRENT_SOURCE_DIR}/STM32CubeMX/Core/Inc
-${CMAKE_CURRENT_SOURCE_DIR}/STM32CubeMX/USB_HOST/App
-${CMAKE_CURRENT_SOURCE_DIR}/STM32CubeMX/USB_HOST/Target
-${CMAKE_CURRENT_SOURCE_DIR}/STM32CubeMX/Drivers/STM32F4xx_HAL_Driver/Inc
-${CMAKE_CURRENT_SOURCE_DIR}/STM32CubeMX/Drivers/STM32F4xx_HAL_Driver/Inc/Legacy
-${CMAKE_CURRENT_SOURCE_DIR}/STM32CubeMX/Middlewares/Third_Party/FreeRTOS/Source/include
-${CMAKE_CURRENT_SOURCE_DIR}/STM32CubeMX/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS
-${CMAKE_CURRENT_SOURCE_DIR}/STM32CubeMX/Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F
-${CMAKE_CURRENT_SOURCE_DIR}/STM32CubeMX/Middlewares/ST/STM32_USB_Host_Library/Core/Inc
-${CMAKE_CURRENT_SOURCE_DIR}/STM32CubeMX/Middlewares/ST/STM32_USB_Host_Library/Class/CDC/Inc
-${CMAKE_CURRENT_SOURCE_DIR}/STM32CubeMX/Drivers/CMSIS/Device/ST/STM32F4xx/Include
-${CMAKE_CURRENT_SOURCE_DIR}/STM32CubeMX/Drivers/CMSIS/Include
+# Post build: generate hex, bin and display size
+add_custom_command(TARGET ${PROJECT_NAME}.elf POST_BUILD
+    COMMAND ${CMAKE_OBJCOPY} -O ihex $<TARGET_FILE:${PROJECT_NAME}.elf> ${BUILD_DIR}/${PROJECT_NAME}hex
+    COMMAND ${CMAKE_OBJCOPY} -O binary -S $<TARGET_FILE:${PROJECT_NAME}.elf> ${BUILD_DIR}/${PROJECT_NAME}.bin
+    COMMAND ${CMAKE_SIZE} $<TARGET_FILE:${PROJECT_NAME}.elf>
 )
 
-# Add an include directory to the include path for both C and assembler code
-target_include_directories(${PROJECT_NAME} PRIVATE
-    ${C_INCLUDES}
-    ${AS_INCLUDES}
-)
+# Target to flash the device with OpenOCD
+option(USE_SUDO "Use sudo when running OpenOCD" ON)
 
-# Set the suffix of the output file to .elf and specify the linker script file
-set_target_properties(${PROJECT_NAME} PROPERTIES
-    SUFFIX ".elf"
-    LINK_FLAGS "-T ${CMAKE_CURRENT_SOURCE_DIR}/STM32CubeMX/STM32F429ZITx_FLASH.ld"
-)
+if(USE_SUDO)
+    set(SUDO_COMMAND "sudo")
+else()
+    set(SUDO_COMMAND "")
+endif()
 
-# Define a custom command to run the target without a debugger
-add_custom_command(TARGET ${PROJECT_NAME}
-        POST_BUILD
-        COMMAND openocd -f board/stm32f429disc1.cfg -c "program ${CMAKE_BINARY_DIR}/${PROJECT_NAME}.elf verify reset exit"
-        COMMENT "Executing ${PROJECT_NAME} without a debugger...")
+add_custom_target(flash
+    COMMAND ${CMAKE_COMMAND} -E echo "Flashing STM32 with OpenOCD..."
+    COMMAND ${SUDO_COMMAND} openocd -f board/stm32f429disc1.cfg -c "program ${BUILD_DIR}/${PROJECT_NAME}.elf verify reset exit"
+    DEPENDS ${PROJECT_NAME}.elf
+)
 # https://www.justinmklam.com/posts/2017/10/vscode-debugger-setup/
-# openocd -f board/stm32f429disc1.cfg -c "program build/STM32F429ZITx_HelloWorld.elf verify reset exit"
+# openocd -f board/stm32f429disc1.cfg -c "program build/STM32CubeMX/STM32CubeMX.elf verify reset exit"
+
+# Output directory for binaries
+set_target_properties(${PROJECT_NAME}.elf PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY ${BUILD_DIR}
+)
+
+enable_language(ASM)
