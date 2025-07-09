@@ -1,0 +1,49 @@
+{
+  // Use Ninja if available
+  "cmake.generator": "Ninja",
+
+  // Configure CMake on workspace open
+  "cmake.configureOnOpen": true,
+
+  // Directory for out-of-source builds
+  "cmake.buildDirectory": "${workspaceFolder}/build",
+
+  // Set source directory (optional if using root)
+  "cmake.sourceDirectory": "${workspaceFolder}",
+
+  // Use custom variant & kit definitions
+  "cmake.variantFile": "${workspaceFolder}/.vscode/cmake-variants.yaml",
+  "cmake.kitsPath": "${workspaceFolder}/.vscode/cmake-kits.json",
+  
+  // Automatically pick the default CMake kit if available
+  "cmake.preferredGenerators": ["Ninja", "Unix Makefiles"],
+
+  // Enable bottom status bar integration
+  "cmake.statusBar.advanced": {
+    "enabled": true,
+    "buildButton": true,
+    "buildTargetSelector": true,
+    "launchTargetSelector": true,
+    "variantSelector": true,
+    "kitSelector": true,
+    "statusLabel": true,
+    "configureButton": true
+  },
+
+  // Hide the CMake Tools view in the left activity bar (optional)
+  "cmake.showExplorer": false,
+
+  // Point to project's toolchain file
+  "cmake.toolchain": "${workspaceFolder}/cmake/gcc_stm32f4.cmake",
+
+  // Optional: Auto-select the first available kit
+  "cmake.configureSettings": {
+    "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
+  },
+
+  // Optional: Enable IntelliSense and C++ analysis
+  "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
+
+  // Optional: Default build target (can still be selected via status bar)
+  "cmake.buildTarget": "all"
+}

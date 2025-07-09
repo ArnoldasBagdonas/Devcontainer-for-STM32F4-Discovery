@@ -9,7 +9,8 @@
       "miDebuggerPath": "/usr/bin/gdb-multiarch",
       "miDebuggerArgs": "--cd=${workspaceFolder} --nx",
       "MIMode": "gdb",
-      "program": "${workspaceFolder}/build/STM32F429ZITx_HelloWorld.elf",
+      //"program": "${workspaceFolder}/build/STM32F429ZITx_HelloWorld.elf",
+      "program": "${command:cmake.launchTargetPath}",
       "setupCommands": [
         {
           "text": "set remotetimeout 5"
@@ -21,7 +22,9 @@
           "text": "monitor reset halt"
         },
         {
-          "text": "file '${workspaceFolder}/build/STM32F429ZITx_HelloWorld.elf'"
+          //"text": "file '${workspaceFolder}/build/STM32F429ZITx_HelloWorld.elf'"
+          "text": "file '${command:cmake.launchTargetPath}'"
+          
         },
         {
           "text": "load"
@@ -42,7 +45,8 @@
       "name": "Attach to running target",
       "type": "cppdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/build/STM32F429ZITx_HelloWorld.elf",
+      //"program": "${workspaceFolder}/build/STM32F429ZITx_HelloWorld.elf",
+      "program": "${command:cmake.launchTargetPath}",
       "args": [],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}",

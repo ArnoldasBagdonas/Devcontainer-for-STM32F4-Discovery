@@ -1,0 +1,13 @@
+[
+  {
+    "name": "GCC STM32F4 Toolchain",
+    "toolchainFile": "${workspaceFolder}/cmake/gcc_stm32f4.cmake"
+  },
+  {
+    "name": "System GCC",
+    "compilers": {
+      "C": "/usr/bin/gcc",
+      "CXX": "/usr/bin/g++"
+    }
+  }
+]

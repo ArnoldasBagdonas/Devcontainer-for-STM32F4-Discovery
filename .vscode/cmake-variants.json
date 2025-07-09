@@ -1,0 +1,37 @@
+{
+  "buildType": {
+    "default": "debug",
+    "choices": {
+      "debug": {
+        "short": "Debug",
+        "long": "Emit debug information",
+        "buildType": "Debug",
+        "settings": {
+          "BIN_NAME": "STM32CubeMX_Debug",
+          "ENABLE_COVERAGE": "no",
+          "DUMMY_MAIN_FOR_UNIT_TESTS": "yes"
+        }
+      },
+      "release": {
+        "short": "Release",
+        "long": "Optimize generated code",
+        "buildType": "Debug",
+        "settings": {
+          "BIN_NAME": "STM32CubeMX_Release",
+          "ENABLE_COVERAGE": "no",
+          "DUMMY_MAIN_FOR_UNIT_TESTS": "yes"
+        }
+      },
+      "coverage": {
+        "short": "Coverage",
+        "long": "Code coverage analysis with Gcov",
+        "buildType": "Debug",
+        "settings": {
+          "BIN_NAME": "STM32CubeMX_Coverage",
+          "ENABLE_COVERAGE": "yes",
+          "DUMMY_MAIN_FOR_UNIT_TESTS": "yes"
+        }
+      }
+    }
+  }
+}
