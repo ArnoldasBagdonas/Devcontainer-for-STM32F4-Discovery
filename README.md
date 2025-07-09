@@ -156,7 +156,7 @@ Two debug configurations are included in `.vscode/launch.json`, accessible via t
 
 To get started with the examples, follow these steps:
 
-1. Clone this repository: `git clone https://gitlab.com/bagdoportfolio/devcontainer-for-stm32f4-discovery.git`
+1. Clone this repository: `git clone https://github.com/ArnoldasBagdonas/Devcontainer-for-STM32F4-Discovery.git`
 2. Follow the instructions provided in README to build and run the example.
 
 Make sure you have Docker installed and properly configured on your system.
